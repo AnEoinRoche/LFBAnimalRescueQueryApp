@@ -1,0 +1,151 @@
+<http://www.example.org/Incident/002419-06012019/PumpInfo>
+        <http://example.org/Incident/pumpCount>
+                "1" ;
+        <http://example.org/Incident/pumpHours>
+                "2" .
+
+<http://www.example.org/002638-06012019/Date>
+        <http://example.org/Incidentdate>
+                "06-Jan-19" ;
+        <http://example.org/Incidenthour>
+                "20" ;
+        <http://example.org/Incidenttime>
+                "20:10:10" .
+
+<http://www.example.org/Incident/002419-06012019>
+        <http://example.org/Incident/animal>
+                <http://www.example.org/Incident/002419-06012019/Animal> ;
+        <http://example.org/Incident/callAt>
+                <http://www.example.org/Incident/002419-06012019/Date> ;
+        <http://example.org/Incident/cost>
+                <http://www.example.org/Incident/002419-06012019/Cost> ;
+        <http://example.org/Incident/description>
+                "SWAN TRAPPED IN BUSH" ;
+        <http://example.org/Incident/ofType>
+                <http://example.org/Incident/002419-06012019/IncidentType> ;
+        <http://example.org/Incident/reportedIn>
+                <http://example.org/Incident/002419-06012019/Area> .
+
+<http://www.example.org/Incident/002638-06012019/Property>
+        <http://example.org/IncidentaddressQualifier>
+                "Correct incident location" ;
+        <http://example.org/IncidentpropertyCateogry>
+                "Dwelling" ;
+        <http://example.org/IncidentpropertyType>
+                "Purpose Built Flats/Maisonettes - 4 to 9 storeys" .
+
+<http://www.example.org/Incident/002638-06012019/PumpInfo>
+        <http://example.org/Incident/pumpCount>
+                "1" ;
+        <http://example.org/Incident/pumpHours>
+                "1" .
+
+<http://www.example.org/Incident/002419-06012019/LFB>
+        <http://example.org/IncidentattendedFrom>
+                "Woodside" ;
+        <http://example.org/IncidentpumpDetails>
+                <http://www.example.org/Incident/002419-06012019/PumpInfo> .
+
+<http://www.example.org/002419-06012019/Location>
+        <http://example.org/Incidentlatitude>
+                "51.40578623" ;
+        <http://example.org/Incidentlongitude>
+                "-0.07510978" .
+
+<http://www.example.org/Incident/002419-06012019/Animal>
+        <http://example.org/Incident/involved>
+                "Bird" .
+
+<http://www.example.org/002638-06012019/IncidentType>
+        <http://example.org/Incident/category>
+                "Other animal assistance" ;
+        <http://example.org/Incident/type>
+                "Assist trapped domestic animal" .
+
+<http://www.example.org/002419-06012019/IncidentType>
+        <http://example.org/Incident/category>
+                "Other animal assistance" ;
+        <http://example.org/Incident/type>
+                "Animal assistance involving wild animal - Other action" .
+
+<http://www.example.org/002638-06012019/Location>
+        <http://example.org/Incidentlatitude>
+                "NULL" ;
+        <http://example.org/Incidentlongitude>
+                "NULL" .
+
+<http://www.example.org/Incident/002419-06012019/Area>
+        <http://example.org/Incident/Coordinantes>
+                <http://www.example.org/Incident/002419-06012019/Location> ;
+        <http://example.org/Incident/TookPlaceAt>
+                <http://www.example.org/Incident/002419-06012019/Property> ;
+        <http://example.org/Incident/borough>
+                "CROYDON" ;
+        <http://example.org/Incident/postcodedistrict>
+                "SE25" ;
+        <http://example.org/Incident/ward>
+                "SOUTH NORWOOD" .
+
+<http://www.example.org/Incident/002638-06012019/LFB>
+        <http://example.org/IncidentattendedFrom>
+                "Bethnal Green" ;
+        <http://example.org/IncidentpumpDetails>
+                <http://www.example.org/Incident/002638-06012019/PumpInfo> .
+
+<http://www.example.org/Incident/002638-06012019/Cost>
+        <http://example.org/Incident/hourlyCost>
+                "333" ;
+        <http://example.org/Incident/totalCost>
+                "333" .
+
+<http://www.example.org/Incident/002638-06012019/Area>
+        <http://example.org/Incident/Coordinantes>
+                <http://www.example.org/Incident/002638-06012019/Location> ;
+        <http://example.org/Incident/TookPlaceAt>
+                <http://www.example.org/Incident/002638-06012019/Property> ;
+        <http://example.org/Incident/borough>
+                "TOWER HAMLETS" ;
+        <http://example.org/Incident/postcodedistrict>
+                "E2" ;
+        <http://example.org/Incident/ward>
+                "ST. PETER'S" .
+
+<http://www.example.org/Incident/002638-06012019/Animal>
+        <http://example.org/Incident/involved>
+                "Cat" .
+
+<http://www.example.org/Incident/002419-06012019/Cost>
+        <http://example.org/Incident/hourlyCost>
+                "333" ;
+        <http://example.org/Incident/totalCost>
+                "666" .
+
+<http://www.example.org/Incident/002638-06012019>
+        <http://example.org/Incident/animal>
+                <http://www.example.org/Incident/002638-06012019/Animal> ;
+        <http://example.org/Incident/callAt>
+                <http://www.example.org/Incident/002638-06012019/Date> ;
+        <http://example.org/Incident/cost>
+                <http://www.example.org/Incident/002638-06012019/Cost> ;
+        <http://example.org/Incident/description>
+                "CAT TRAPPED BEHIND KITCHEN CABINETS" ;
+        <http://example.org/Incident/ofType>
+                <http://example.org/Incident/002638-06012019/IncidentType> ;
+        <http://example.org/Incident/reportedIn>
+                <http://example.org/Incident/002638-06012019/Area> .
+
+<http://www.example.org/002419-06012019/Date>
+        <http://example.org/Incidentdate>
+                "06-Jan-19" ;
+        <http://example.org/Incidenthour>
+                "11" ;
+        <http://example.org/Incidenttime>
+                "11:50:29" .
+
+<http://www.example.org/Incident/002419-06012019/Property>
+        <http://example.org/IncidentaddressQualifier>
+                "On land associated with building" ;
+        <http://example.org/IncidentpropertyCateogry>
+                "Outdoor" ;
+        <http://example.org/IncidentpropertyType>
+                "Animal harm outdoors" .

@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<head>
+    <title>LFB Animal Rescue</title>
+    <link href = "../YASQE/dist/yasqe.min.css" rel = "stylesheet" type ="text/css"/>
+    <link href = "../YASQE/doc/doc.min.css" rel = "stylesheet" type ="text/css"/>
+    <link href = "../YASR/dist/yasr.min.css" rel = "stylesheet" type ="text/css"/>
+    <link href = "../YASR/doc/doc.min.css" rel = "stylesheet" type ="text/css"/>
+    <link href = "style.css" rel = "stylesheet" type ="text/css"/>
+
+</head>
+<div id = "queryDiv"></div>
+<div id = "resultDiv"></div>
+<script src = " ../YASQE/dist/yasqe.bundled.min.js"></script>
+<script src = "../YASQE/doc/doc.min.js"></script>
+<script src = "../YASR/dist/yasr.bundled.min.js"></script>
+<script src = "../YASR/doc/doc.min.js"></script>
+
+<script type = "text/javascript">
+    var yasqe = YASQE(document.getElementById("queryDiv"), {
+        sparql: {
+            endpoint:"output.ttl",
+            showQueryButton: true,
+            callbacks:{
+                success:function(data){
+                    console.log("success", data);
+                }
+            }
+        }
+    });
+    var yasr = YASR(document.getElementById("resultDiv"), {
+        getUsedPrefixes: yasqe.getUsedPrefixesFromQuery
+    });
+    yasqe.options.sparql.callbacks.complete = yasr.setResponse;
+</script>
