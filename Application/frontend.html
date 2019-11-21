@@ -8,17 +8,83 @@
     <link href = "style.css" rel = "stylesheet" type ="text/css"/>
 
 </head>
+<body>
 <div id = "queryDiv"></div>
+
+<button onclick="runPrebuiltQuery('query1')">check Incident type</button>
+<button onclick="runPrebuiltQuery('query2')">check the location of 1000 Incident </button>
+<button onclick="runPrebuiltQuery('query3')">check pump info </button>
+<button onclick="runPrebuiltQuery('query4')">check Incident time </button>
+<button onclick="runPrebuiltQuery('query5')">check the location in detail </button>
+<button onclick="runPrebuiltQuery('query6')">check animal status </button>
 <div id = "resultDiv"></div>
 <script src = " ../YASQE/dist/yasqe.bundled.min.js"></script>
 <script src = "../YASQE/doc/doc.min.js"></script>
 <script src = "../YASR/dist/yasr.bundled.min.js"></script>
 <script src = "../YASR/doc/doc.min.js"></script>
 
+<textarea id = "query1" style="display: none">
+    SELECT ?Incident ?IncidentType
+    WHERE{
+	?Incident <http://example.org/Incident/ofType> ?IncidentType.
+    }
+</textarea>
+
+<textarea id = "query2" style="display: none">
+    SELECT ?Incident ?Location ?LFB ?Borough
+    WHERE{
+    ?Incident <http://example.org/IncidentattendedFrom> ?Location.
+    ?LFB <http://example.org/Incident/borough> ?Borough
+    }LIMIT 1000
+</textarea>
+
+<textarea id = "query3" style="display: none">
+    SELECT ?Incident ?IncidentType ?pumpinfo ?count
+    WHERE{
+	?Incident <http://example.org/IncidentpropertyType> ?IncidentType.
+  	?pumpinfo <http://example.org/Incident/pumpCount> ?count.
+    } LIMIT 1000
+</textarea>
+
+<textarea id = "query4" style="display: none">
+    SELECT ?Incident ?Incidenttime
+    WHERE{
+	?Incident <http://example.org/Incidenttime> ?Incidenttime.
+    } LIMIT 1000
+</textarea>
+
+<textarea id = "query5" style="display: none">
+	SELECT ?Ward ?PostCodeDistrict ?place
+	WHERE{
+		?Area <http://example.org/Incident/ward> ?Ward.
+  		?Area <http://example.org/Incident/postcodedistrict> ?PostCodeDistrict.
+  		?Area <http://example.org/Incident/TookPlaceAt> ?TookPlaceAt.
+  		?TookPlaceAt <http://example.org/IncidentaddressQualifier> ?place
+	}LIMIT 1000
+</textarea>
+
+<textarea id = "query6" style="display: none">
+	SELECT ?involvedAnimal ?description ?hourlyCost ?totalCost
+	WHERE{
+		?Incident <http://example.org/Incident/animal> ?Animal.
+  		?Animal <http://example.org/Incident/involved> ?involvedAnimal.
+  		?Incident <http://example.org/Incident/description> ?description.
+  		?Incident <http://example.org/Incident/cost> ?Cost.
+  		?Cost <http://example.org/Incident/hourlyCost> ?hourlyCost.
+  		?Cost <http://example.org/Incident/totalCost> ?totalCost
+	}LIMIT 1000
+</textarea>
+
 <script type = "text/javascript">
-    var yasqe = YASQE(document.getElementById("queryDiv"), {
+
+    function runPrebuiltQuery(query) {
+        var q = document.getElementById(query).value;
+        yasqe.setValue(q);
+    }
+
+    var yasqe = YASQE(document.getElementById('queryDiv'), {
         sparql: {
-            endpoint:"http://localhost:3030/LFB",
+            endpoint:"http://3d3c8850.ngrok.io/project",
             showQueryButton: true,
             callbacks:{
                 success:function(data){
@@ -27,8 +93,12 @@
             }
         }
     });
+
     var yasr = YASR(document.getElementById("resultDiv"), {
         getUsedPrefixes: yasqe.getUsedPrefixesFromQuery
     });
     yasqe.options.sparql.callbacks.complete = yasr.setResponse;
+
+
 </script>
+</body>
