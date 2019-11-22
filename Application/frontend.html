@@ -11,12 +11,16 @@
 <body>
 <div id = "queryDiv"></div>
 
-<button onclick="runPrebuiltQuery('query1')">check Incident type</button>
-<button onclick="runPrebuiltQuery('query2')">check the location of 1000 Incident </button>
-<button onclick="runPrebuiltQuery('query3')">check pump info </button>
-<button onclick="runPrebuiltQuery('query4')">check Incident time </button>
-<button onclick="runPrebuiltQuery('query5')">check the location in detail </button>
-<button onclick="runPrebuiltQuery('query6')">check animal status </button>
+<button onclick="runPrebuiltQuery('query1')">check Incident time and place</button>
+<button onclick="runPrebuiltQuery('query2')">ckeck the average, maximum and minimum CallOutTimes for a Ward containing the Borough name </button>
+<button onclick="runPrebuiltQuery('query3')">check incident location, date, and description </button>
+<button onclick="runPrebuiltQuery('query4')">check incident location, date, and involved animals </button>
+<button onclick="runPrebuiltQuery('query5')">check every incident where an animal was stuck </button>
+<button onclick="runPrebuiltQuery('query6')"> </button>
+<button onclick="runPrebuiltQuery('query7')"> </button>
+<button onclick="runPrebuiltQuery('query8')"> </button>
+<button onclick="runPrebuiltQuery('query9')"> </button>
+<button onclick="runPrebuiltQuery('query9')"> </button>
 <div id = "resultDiv"></div>
 <script src = " ../YASQE/dist/yasqe.bundled.min.js"></script>
 <script src = "../YASQE/doc/doc.min.js"></script>
@@ -24,57 +28,96 @@
 <script src = "../YASR/doc/doc.min.js"></script>
 
 <textarea id = "query1" style="display: none">
-    SELECT ?Incident ?IncidentType
-    WHERE{
-	?Incident <http://example.org/Incident/ofType> ?IncidentType.
-    }
+   SELECT ?time ?area
+WHERE{
+	<http://www.example.org/Incident/000481-01012019/Date> <http://www.example.org/Incident/time> ?time.
+	<http://www.example.org/Incident/000481-01012019/LFB>  <http://www.example.org/Incident/attendedFrom> ?area .
+} LIMIT 100
 </textarea>
 
 <textarea id = "query2" style="display: none">
-    SELECT ?Incident ?Location ?LFB ?Borough
-    WHERE{
-    ?Incident <http://example.org/IncidentattendedFrom> ?Location.
-    ?LFB <http://example.org/Incident/borough> ?Borough
-    }LIMIT 1000
+  PREFIX incident: <http://www.example.org/Incident/>
+
+	SELECT (AVG(?callHour) as ?avg_call_hour) (MAX(?callHour) as ?max_call_hour) (MIN(?callHour) as ?min_call_hour) WHERE {
+  	?callAt incident:hour ?callHour . {
+		SELECT ?callAt WHERE {
+  		?incident incident:callAt ?callAt . {
+			SELECT ?incident WHERE {
+  				?incident incident:reportedIn ?area . {
+    				SELECT ?area  WHERE {
+    					?area incident:ward ?ward .
+              			?area incident:borough ?borough .
+              FILTER(CONTAINS(?ward, ?borough))
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
 </textarea>
 
 <textarea id = "query3" style="display: none">
-    SELECT ?Incident ?IncidentType ?pumpinfo ?count
-    WHERE{
-	?Incident <http://example.org/IncidentpropertyType> ?IncidentType.
-  	?pumpinfo <http://example.org/Incident/pumpCount> ?count.
-    } LIMIT 1000
+     SELECT ?involvedAnimal ?place ?postcodeddistrict ?date
+	WHERE{
+		?Incident <http://www.example.org/Incident/animal> ?Animal.
+  		?Animal <http://www.example.org/Incident/involved> ?involvedAnimal.
+  		?Incident <http://www.example.org/Incident/reportedIn> ?reportedIn.
+  		?LFB <http://www.example.org/Incident/borough> ?place.
+  		?LFB <http://www.example.org/Incident/postcodedistrict> ?postcodeddistrict.
+  		?Incident <http://www.example.org/Incident/callAt> ?callAt.
+  		?callAt <http://www.example.org/Incident/date> ?date
+  		}LIMIT 10
 </textarea>
 
 <textarea id = "query4" style="display: none">
-    SELECT ?Incident ?Incidenttime
-    WHERE{
-	?Incident <http://example.org/Incidenttime> ?Incidenttime.
-    } LIMIT 1000
+  	SELECT ?Borough ?PostCodeDistrict ?description ?date
+	WHERE{
+		?LFB <http://www.example.org/Incident/borough> ?Borough.
+  		?LFB <http://www.example.org/Incident/postcodedistrict> ?PostCodeDistrict.
+  		?Incident <http://www.example.org/Incident/description> ?description.
+  		?Incident <http://www.example.org/Incident/callAt> ?callAt.
+  		?callAt <http://www.example.org/Incident/date> ?date
+	}LIMIT 10
 </textarea>
 
 <textarea id = "query5" style="display: none">
-	SELECT ?Ward ?PostCodeDistrict ?place
-	WHERE{
-		?Area <http://example.org/Incident/ward> ?Ward.
-  		?Area <http://example.org/Incident/postcodedistrict> ?PostCodeDistrict.
-  		?Area <http://example.org/Incident/TookPlaceAt> ?TookPlaceAt.
-  		?TookPlaceAt <http://example.org/IncidentaddressQualifier> ?place
-	}LIMIT 1000
+PREFIX incident: <http://www.example.org/Incident/>
+SELECT ?animal ?incident WHERE{
+  ?animalTriple incident:involved ?animal .{
+    SELECT ?animalTriple ?incident WHERE{
+     	 ?incident incident:animal ?animalTriple .{
+   		 SELECT ?incident WHERE {
+     			 ?incident incident:description ?string .FILTER regex(str(?string), "STUCK") .
+   		 }
+     	 }
+	}
+  }
+}
+LIMIT 100
+
 </textarea>
 
 <textarea id = "query6" style="display: none">
-	SELECT ?involvedAnimal ?description ?hourlyCost ?totalCost
-	WHERE{
-		?Incident <http://example.org/Incident/animal> ?Animal.
-  		?Animal <http://example.org/Incident/involved> ?involvedAnimal.
-  		?Incident <http://example.org/Incident/description> ?description.
-  		?Incident <http://example.org/Incident/cost> ?Cost.
-  		?Cost <http://example.org/Incident/hourlyCost> ?hourlyCost.
-  		?Cost <http://example.org/Incident/totalCost> ?totalCost
-	}LIMIT 1000
+
 </textarea>
 
+<textarea id="query7" style="display: none">
+
+</textarea>
+
+<textarea id="query8" style="display: none">
+
+</textarea>
+
+<textarea id="query9" style="display: none">
+
+</textarea>
+
+<textarea id="query10" style="display: none">
+
+</textarea>
 <script type = "text/javascript">
 
     function runPrebuiltQuery(query) {
@@ -84,7 +127,7 @@
 
     var yasqe = YASQE(document.getElementById('queryDiv'), {
         sparql: {
-            endpoint:"http://3d3c8850.ngrok.io/project",
+            endpoint:"http://35808e14.ngrok.io/dataset.html?tab=upload&ds=/lfb",
             showQueryButton: true,
             callbacks:{
                 success:function(data){
