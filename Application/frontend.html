@@ -12,15 +12,15 @@
 <div id = "queryDiv"></div>
 
 <button onclick="runPrebuiltQuery('query1')">check Incident time and place</button>
-<button onclick="runPrebuiltQuery('query2')">ckeck the average, maximum and minimum CallOutTimes for a Ward containing the Borough name </button>
+<button onclick="runPrebuiltQuery('query2')">check the average, maximum and minimum CallOutTimes for a Ward containing the Borough name </button>
 <button onclick="runPrebuiltQuery('query3')">check incident location, date, and description </button>
 <button onclick="runPrebuiltQuery('query4')">check incident location, date, and involved animals </button>
 <button onclick="runPrebuiltQuery('query5')">check every incident where an animal was stuck </button>
-<button onclick="runPrebuiltQuery('query6')"> </button>
-<button onclick="runPrebuiltQuery('query7')"> </button>
-<button onclick="runPrebuiltQuery('query8')"> </button>
-<button onclick="runPrebuiltQuery('query9')"> </button>
-<button onclick="runPrebuiltQuery('query9')"> </button>
+<button onclick="runPrebuiltQuery('query6')">check the incident call time later than 08:20:13</button>
+<button onclick="runPrebuiltQuery('query7')">check the date with the most trapped animal incidents</button>
+<button onclick="runPrebuiltQuery('query8')">check the time and data involved both in ward and borough</button>
+<button onclick="runPrebuiltQuery('query9')">check the frequency of all properties </button>
+<button onclick="runPrebuiltQuery('query10')">check the incident time, area, and victim</button>
 <div id = "resultDiv"></div>
 <script src = " ../YASQE/dist/yasqe.bundled.min.js"></script>
 <script src = "../YASQE/doc/doc.min.js"></script>
@@ -28,11 +28,12 @@
 <script src = "../YASR/doc/doc.min.js"></script>
 
 <textarea id = "query1" style="display: none">
-   SELECT ?time ?area
-WHERE{
-	<http://www.example.org/Incident/000481-01012019/Date> <http://www.example.org/Incident/time> ?time.
-	<http://www.example.org/Incident/000481-01012019/LFB>  <http://www.example.org/Incident/attendedFrom> ?area .
-} LIMIT 100
+	PREFIX incident: <http://www.example.org/Incident/>
+	SELECT ?time ?area
+	WHERE{
+		?Incident :time ?time.
+		?Incident :attendedFrom ?area .
+	} LIMIT 100
 </textarea>
 
 <textarea id = "query2" style="display: none">
@@ -59,26 +60,28 @@ WHERE{
 </textarea>
 
 <textarea id = "query3" style="display: none">
-     SELECT ?involvedAnimal ?place ?postcodeddistrict ?date
+	PREFIX incident: <http://www.example.org/Incident/>
+	SELECT ?involvedAnimal ?place ?postcodeddistrict ?date
 	WHERE{
-		?Incident <http://www.example.org/Incident/animal> ?Animal.
-  		?Animal <http://www.example.org/Incident/involved> ?involvedAnimal.
-  		?Incident <http://www.example.org/Incident/reportedIn> ?reportedIn.
-  		?LFB <http://www.example.org/Incident/borough> ?place.
-  		?LFB <http://www.example.org/Incident/postcodedistrict> ?postcodeddistrict.
-  		?Incident <http://www.example.org/Incident/callAt> ?callAt.
-  		?callAt <http://www.example.org/Incident/date> ?date
+		?Incident incident:animal ?Animal.
+  		?Animal incident:involved ?involvedAnimal.
+  		?Incident incident:reportedIn ?reportedIn.
+  		?LFB incident:borough ?place.
+  		?LFB incident:postcodedistrict ?postcodeddistrict.
+  		?Incident incident:callAt ?callAt.
+  		?callAt incident:date ?date
   		}LIMIT 10
 </textarea>
 
 <textarea id = "query4" style="display: none">
+	PREFIX incident: <http://www.example.org/Incident/>
   	SELECT ?Borough ?PostCodeDistrict ?description ?date
 	WHERE{
-		?LFB <http://www.example.org/Incident/borough> ?Borough.
-  		?LFB <http://www.example.org/Incident/postcodedistrict> ?PostCodeDistrict.
-  		?Incident <http://www.example.org/Incident/description> ?description.
-  		?Incident <http://www.example.org/Incident/callAt> ?callAt.
-  		?callAt <http://www.example.org/Incident/date> ?date
+		?LFB incident:borough ?Borough.
+  		?LFB incident:postcodedistrict ?PostCodeDistrict.
+  		?Incident incident:description ?description.
+  		?Incident incident: callAt> ?callAt.
+  		?callAt incident: date ?date
 	}LIMIT 10
 </textarea>
 
@@ -92,7 +95,7 @@ SELECT ?animal ?incident WHERE{
      			 ?incident incident:description ?string .FILTER regex(str(?string), "STUCK") .
    		 }
      	 }
-	}
+		}
   }
 }
 LIMIT 100
@@ -100,23 +103,98 @@ LIMIT 100
 </textarea>
 
 <textarea id = "query6" style="display: none">
+PREFIX incident: <http://www.example.org/Incident/>
+
+SELECT ?callTime WHERE {
+  ?callAt incident:time ?callTime . {
+	SELECT ?callAt WHERE {
+  		?incident incident:callAt ?callAt . {
+			SELECT ?incident WHERE {
+  				?incident incident:reportedIn ?area . {
+    				SELECT ?area  WHERE {
+    					?area incident:ward ?ward .
+           				 }
+          }
+        }
+      }
+    }
+  }
+  FILTER (?callTime > "08:20:13")
+}
+ORDER BY ?callTime
+
 
 </textarea>
 
 <textarea id="query7" style="display: none">
+PREFIX incident: <http://www.example.org/Incident/>
+	SELECT (COUNT(?date) as ?dc) ?date WHERE{
+  ?dateTriple incident:date ?date .{
+	SELECT ?dateTriple ?incident ?animal WHERE{
+  	?incident incident:callAt ?dateTriple .{
+    	SELECT ?animal ?incident WHERE {
+      	?animalTriple incident:involved ?animal .{
+        	SELECT ?animalTriple ?incident WHERE {
+       		 ?incident incident:animal ?animalTriple . {
+           		 SELECT ?incident WHERE {
+     					 ?incident incident:description ?string .FILTER regex(str(?string), "TRAPPED") .
+            	}
+          	}
+        	}
+      	}
+    	}
+  	}
+	}
+  }
+} GROUP BY ?date
+ORDER by DESC(?dc)
+LIMIT 1
+
 
 </textarea>
 
 <textarea id="query8" style="display: none">
+	PREFIX incident: <http://www.example.org/Incident/>
+	SELECT ?date ?time ?LFB
+	WHERE{
+  		?date incident:time ?time.
+  		?LFB incident:attendedFrom ?Location. {
+    	SELECT ?Location WHERE {
+      		?location incident:ward ?ward .
+      		?location incident:borough ?borough .
+     	FILTER(CONTAINS(?ward, ?borough))
+      }
+    }
+  }
+LIMIT 100
 
 </textarea>
 
 <textarea id="query9" style="display: none">
-
+PREFIX incident: <http://www.example.org/Incident/>
+SELECT (COUNT(?property) as ?cp) ?property WHERE {
+  	?propertyTriple incident:propertyType ?property .{
+    	SELECT ?propertyTriple ?incident WHERE {
+      		?area incident:TookPlaceAt ?propertyTriple .{
+        		SELECT ?area ?incident WHERE {
+          			?incident incident:reportedIn ?area
+        }
+      }
+    }
+  }
+}
+GROUP BY ?property
+ORDER by DESC(?pc)
 </textarea>
 
 <textarea id="query10" style="display: none">
-
+PREFIX incident: <http://www.example.org/Incident/>
+	SELECT ?time ?area ?victim
+	WHERE{
+		?Incident :time ?time.
+		?Incident :attendedFrom ?area .
+		?Incident :victim ?victim.
+	} LIMIT 100
 </textarea>
 <script type = "text/javascript">
 
@@ -127,7 +205,7 @@ LIMIT 100
 
     var yasqe = YASQE(document.getElementById('queryDiv'), {
         sparql: {
-            endpoint:"http://35808e14.ngrok.io/dataset.html?tab=upload&ds=/lfb",
+            endpoint:"http://35808e14.ngrok.io/project",
             showQueryButton: true,
             callbacks:{
                 success:function(data){
